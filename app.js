@@ -1,17 +1,17 @@
 const express = require('express')
 const path = require('path')
 const app = express()
+const userRoutes = require('./src/routes/userRoutes')
 
 // Middleware para analisar requisições
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
-// Configurar o mecanismo de visualização como 'ejs'
-app.set('view engine', 'ejs')
-// Definir o diretório onde estão os arquivos de visualização
-app.set('views', path.join(__dirname, 'src', 'public', 'view'))
+app.set('view engine', 'ejs') // Configurar o mecanismo de visualização como 'ejs'
+app.set('views', path.join(__dirname, 'src', 'public', 'view')) // Definir o diretório onde estão os arquivos de visualização
 
-// Rota principal
+app.use(userRoutes)
+
 app.get('/', (req, res) => {
     res.render('index'); // Não precisa incluir a extensão '.ejs'
 })
@@ -36,8 +36,9 @@ app.post('/auth', async (req, res) => {
             })
         });
 
-        const data = await response.json() // Converte a resposta para JSON
-        res.status(200).json(data) // Envia o JSON como resposta para o Postman
+        const data = await response.json()
+        console.log(data) // Converte a resposta para JSON
+        res.status(200).redirect('/') // Envia o JSON como resposta para o Postman
     } catch (err) {
         console.error("Error occurred:", err)
         res.status(500).json({ error: "Failed to fetch ticket" }) // Envia um erro para o Postman
